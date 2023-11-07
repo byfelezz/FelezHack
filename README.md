@@ -17,4 +17,10 @@
 
 **Installation of Tools: The program allows the user to automatically download and install the necessary tools.**
 
+**Default Information;**
+
+**Username:** admin
+
+**Password:** 123456
+
 # ***Coder : ByFelez***
