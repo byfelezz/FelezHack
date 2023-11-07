@@ -4,17 +4,16 @@ import os
 import time
 import sys
 import curses
+import subprocess
 
 __title__ = "FelezHack"
 
 def init(stdscr):
-    """Programın başlatılmasını sağlar."""
     colorama.init()
     curses.curs_set(0)
     stdscr.clear()
 
 def login(stdscr):
-    """Kullanıcıdan giriş bilgilerini alır."""
     stdscr.clear()
     stdscr.addstr(5, 5, "FelezHack", curses.A_BOLD)
     stdscr.addstr(10, 5, "Kullanıcı adı: ")
@@ -30,7 +29,6 @@ def login(stdscr):
         return False
 
 def main_menu(stdscr):
-    """Ana menüyü gösterir."""
     stdscr.clear()
     stdscr.addstr(5, 5, "FelezHack", curses.A_BOLD)
     stdscr.addstr(10, 5, "1. Nmap")
@@ -45,17 +43,17 @@ def main_menu(stdscr):
     option = stdscr.getch()
 
     if option == ord('1'):
-        nmap()
+        execute_tool("nmap", stdscr)
     elif option == ord('2'):
-        sqlmap()
+        execute_tool("sqlmap", stdscr)
     elif option == ord('3'):
-        wpscan()
+        execute_tool("wpscan", stdscr)
     elif option == ord('4'):
-        nikto()
+        execute_tool("nikto", stdscr)
     elif option == ord('5'):
-        amass()
+        execute_tool("amass", stdscr)
     elif option == ord('6'):
-        dmitry()
+        execute_tool("dmitry", stdscr)
     elif option == ord('7'):
         sys.exit()
     elif option == 18:  # Ctrl+r
@@ -63,62 +61,37 @@ def main_menu(stdscr):
     elif option == 24:  # Ctrl+x
         sys.exit()
 
-def nmap():
-    """Nmap aracını çalıştırır."""
+def execute_tool(tool_name, stdscr):
     os.system("clear")
-    print("Nmap aracını çalıştırılıyor...")
-    time.sleep(2)
-    os.system("nmap -sV -sC -oN nmap_scan.txt 192.168.1.1-255")
-    print("Nmap aracı başarıyla çalıştırıldı.")
+    stdscr.clear()
+    stdscr.addstr(5, 5, f"{tool_name.capitalize()} Aracı", curses.A_BOLD)
+    stdscr.addstr(10, 5, "Hedefi Belirtin (URL veya IP): ")
+    stdscr.refresh()
+    target = stdscr.getstr(10, 33).decode('utf-8')
 
-def sqlmap():
-    """SQLMap aracını çalıştırır."""
-    os.system("clear")
-    print("SQLMap aracını çalıştırılıyor...")
-    time.sleep(2)
-    os.system("sqlmap -u http://example.com --dbs")
-    print("SQLMap aracı başarıyla çalıştırıldı.")
-
-def wpscan():
-    """WPScan aracını çalıştırır."""
-    os.system("clear")
-    print("WPScan aracını çalıştırılıyor...")
-    time.sleep(2)
-    os.system("wpscan --url http://example.com")
-    print("WPScan aracı başarıyla çalıştırıldı.")
-
-def nikto():
-    """Nikto aracını çalıştırır."""
-    os.system("clear")
-    print("Nikto aracını çalıştırılıyor...")
-    time.sleep(2)
-    os.system("nikto -h http://example.com")
-    print("Nikto aracı başarıyla çalıştırıldı.")
-
-def amass():
-    """Amass aracını çalıştırır."""
-    os.system("clear")
-    print("Amass aracını çalıştırılıyor...")
-    time.sleep(2)
-    os.system("amass enum -o amass_scan.txt -i http://example.com")
-    print("Amass aracı başarıyla çalıştırıldı.")
-
-def dmitry():
-    """Dmitry aracını çalıştırır."""
-    os.system("clear")
-    print("Dmitry aracını çalıştırılıyor...")
-    time.sleep(2)
-    os.system("dmitry -r http://example.com -o dmitry_scan.txt")
-    print("Dmitry aracı başarıyla çalıştırıldı.")
+    if tool_name == "nmap":
+        subprocess.run(["nmap", "-sV", "-sC", "-oN", "nmap_scan.txt", target])
+    elif tool_name == "sqlmap":
+        subprocess.run(["sqlmap", "-u", target, "--dbs"])
+    elif tool_name == "wpscan":
+        subprocess.run(["wpscan", "--url", target])
+    elif tool_name == "nikto":
+        subprocess.run(["nikto", "-h", target])
+    elif tool_name == "amass":
+        subprocess.run(["amass", "enum", "-o", "amass_scan.txt", "-i", target])
+    elif tool_name == "dmitry":
+        subprocess.run(["dmitry", "-r", target, "-o", "dmitry_scan.txt"])
+    
+    stdscr.addstr(12, 5, f"{tool_name.capitalize()} aracı başarıyla çalıştırıldı.")
+    stdscr.refresh()
+    stdscr.getch()
 
 def install():
-    """Programın altında çalışan tüm araçları kullanıcının sistemine indirir."""
     os.system("clear")
     print("FelezHack'i kullanmak için lütfen kurulumu tamamlayın.")
     print("Kurulumu yapmak için 'install' komutunu girin.")
 
 def run(stdscr):
-    """Programın ana işlevini gerçekleştirir."""
     init(stdscr)
 
     if login(stdscr):
